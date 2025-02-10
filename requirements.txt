@@ -3,3 +3,7 @@ pytest-playwright
 playwright
 pytest-html  # Untuk laporan HTML
 pytest-xdist  # Untuk parallel testing
+requests
+jsonschema
+python-dotenv
+faker
