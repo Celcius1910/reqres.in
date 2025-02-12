@@ -79,6 +79,15 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Ignore environment folder
+myenv/
+.vscode/
+__pycache__/
+*.ps1
+*.bat
+*.sh
+
+
 # IPython
 profile_default/
 ipython_config.py
