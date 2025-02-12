@@ -1,9 +1,8 @@
 pytest
-pytest-playwright
-playwright
-pytest-html  # Untuk laporan HTML
+pytest-html  # Untuk laporan HTML (opsional)
 pytest-xdist  # Untuk parallel testing
 requests
 jsonschema
 python-dotenv
 faker
+allure-pytest  # Tambahkan Allure untuk reporting
