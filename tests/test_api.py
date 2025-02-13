@@ -111,9 +111,12 @@ def test_get_users(api_client):
 
 @allure.feature("User API")
 @allure.story("Get Single User")
-def test_single_user(api_client):
-    with allure.step("Send GET request to /users/2"):
-        response = api_client.get(f"{BASE_URL}/users/2")
+@pytest.mark.parametrize("index", [
+    1, 2, 3
+])
+def test_single_user(api_client, index):
+    with allure.step(f"Send GET request to /users/{index}"):
+        response = api_client.get(f"{BASE_URL}/users/{index}")
 
     with allure.step("Validate response status code"):
         assert response.status_code == 200
@@ -123,10 +126,14 @@ def test_single_user(api_client):
 
 @allure.feature("User API")
 @allure.story("Create User")
-def test_create_user(api_client):
-    name = faker.name()
-    job = faker.job()
-    payload = {"name": f"{name}", "job": f"{job}"}
+@pytest.mark.parametrize("user", [
+    (faker.name(), faker.job()),
+    (faker.name(), faker.job()),
+    (faker.name(), faker.job())
+])
+def test_create_user(api_client, user):
+    user = list(user)
+    payload = {"name": f"{user[0]}", "job": f"{user[1]}"}
     with allure.step("Send POST request to /users"):
         response = api_client.post(f"{BASE_URL}/users", json=payload)
 
@@ -134,16 +141,19 @@ def test_create_user(api_client):
         assert response.status_code == 201
 
     with allure.step("Validate response contains correct user name"):
-        assert response.json()["name"] == name
+        assert response.json()["name"] == user[0]
     
     with allure.step("Validate response contains correct job"):
-        assert response.json()["job"] == job
+        assert response.json()["job"] == user[1]
 
 @allure.feature("User API")
 @allure.story("Delete User")
-def test_delete_user(api_client):
-    with allure.step("Send DELETE request to /users/2"):
-        response = api_client.delete(f"{BASE_URL}/users/2")
+@pytest.mark.parametrize("index", [
+    1, 2, 3
+])
+def test_delete_user(api_client, index):
+    with allure.step(f"Send DELETE request to /users/{index}"):
+        response = api_client.delete(f"{BASE_URL}/users/{index}")
 
     with allure.step("Validate response status code"):
         assert response.status_code == 204
@@ -165,8 +175,11 @@ def test_get_resource(api_client):
 
 @allure.feature("Resource API")
 @allure.story("Get Single Resource")
-def test_single_resource(api_client):
-    with allure.step("Send GET request to /unknown/5"):
+@pytest.mark.parametrize("index", [
+    1, 2, 3
+])
+def test_single_resource(api_client, index):
+    with allure.step(f"Send GET request to /unknown/{index}"):
         response = api_client.get(f"{BASE_URL}/unknown/5")
 
     with allure.step("Validate response status code"):
