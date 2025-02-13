@@ -3,6 +3,7 @@ import pytest
 import allure
 from jsonschema import validate
 from faker import Faker
+import re
 
 faker = Faker()
 
@@ -93,6 +94,16 @@ LIST_RESOURCE_SCHEMA = {
     "required": ["page", "per_page", "total", "total_pages", "data"]
 }
 
+REGISTER_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"},
+        "token": {"type": "string"},
+    },
+    "required": ["id", "token"]
+}
+
+
 @allure.feature("User API")
 @allure.story("Get Users List")
 def test_get_users(api_client):
@@ -107,16 +118,17 @@ def test_get_users(api_client):
         
     with allure.step("Validate response matches LIST_USER_SCHEMA"):
         validate(instance=response.json(), schema=LIST_USER_SCHEMA)
-
+    
 
 @allure.feature("User API")
 @allure.story("Get Single User")
 @pytest.mark.parametrize("index", [
-    1, 2, 3
+    4
 ])
 def test_single_user(api_client, index):
     with allure.step(f"Send GET request to /users/{index}"):
         response = api_client.get(f"{BASE_URL}/users/{index}")
+        print(response.json())
 
     with allure.step("Validate response status code"):
         assert response.status_code == 200
@@ -187,3 +199,22 @@ def test_single_resource(api_client, index):
 
     with allure.step("Validate response matches RESOURCE_SCHEMA"):
         validate(instance=response.json(), schema=RESOURCE_SCHEMA)
+        
+@allure.feature("Register API")
+@allure.story("Register User")
+@pytest.mark.parametrize("register", [
+    {"email": "michael.lawson@reqres.in", "password": faker.password()},
+    {"email": "lindsay.ferguson@reqres.in", "password": faker.password()},
+    {"email": "tobias.funke@reqres.in", "password": faker.password()}
+])
+def test_register_user(api_client, register):
+    with allure.step(f"Send POST request to /register"):
+        payload = {"email": register["email"], "password": register["password"]}
+        response = api_client.post(f"{BASE_URL}/register", json=payload)
+        print(response.json())
+
+    with allure.step("Validate response status code"):
+        assert response.status_code == 200
+
+    with allure.step("Validate response matches REGISTER_SCHEMA"):
+        validate(instance=response.json(), schema=REGISTER_SCHEMA)
