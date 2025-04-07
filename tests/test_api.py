@@ -20,10 +20,10 @@ USER_SCHEMA = {
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
             },
-            "required": ["id", "email", "first_name", "last_name"]
+            "required": ["id", "email", "first_name", "last_name"],
         }
     },
-    "required": ["data"]
+    "required": ["data"],
 }
 
 LIST_USER_SCHEMA = {
@@ -42,13 +42,13 @@ LIST_USER_SCHEMA = {
                     "email": {"type": "string"},
                     "first_name": {"type": "string"},
                     "last_name": {"type": "string"},
-                    "avatar": {"type": "string"}
+                    "avatar": {"type": "string"},
                 },
-                "required": ["id", "email", "first_name", "last_name", "avatar"]
-            }
-        }
+                "required": ["id", "email", "first_name", "last_name", "avatar"],
+            },
+        },
     },
-    "required": ["page", "per_page", "total", "total_pages", "data"]
+    "required": ["page", "per_page", "total", "total_pages", "data"],
 }
 
 RESOURCE_SCHEMA = {
@@ -57,16 +57,16 @@ RESOURCE_SCHEMA = {
         "data": {
             "type": "object",
             "properties": {
-                    "id": {"type": "integer"},
-                    "name": {"type": "string"},
-                    "year": {"type": "integer"},
-                    "color": {"type": "string"},
-                    "pantone_value": {"type": "string"}
-                },
-            "required": ["id", "name", "year", "color", "pantone_value"]
+                "id": {"type": "integer"},
+                "name": {"type": "string"},
+                "year": {"type": "integer"},
+                "color": {"type": "string"},
+                "pantone_value": {"type": "string"},
+            },
+            "required": ["id", "name", "year", "color", "pantone_value"],
         }
     },
-    "required": ["data"]
+    "required": ["data"],
 }
 
 LIST_RESOURCE_SCHEMA = {
@@ -85,13 +85,13 @@ LIST_RESOURCE_SCHEMA = {
                     "name": {"type": "string"},
                     "year": {"type": "integer"},
                     "color": {"type": "string"},
-                    "pantone_value": {"type": "string"}
+                    "pantone_value": {"type": "string"},
                 },
-                "required": ["id", "name", "year", "color", "pantone_value"]
-            }
-        }
+                "required": ["id", "name", "year", "color", "pantone_value"],
+            },
+        },
     },
-    "required": ["page", "per_page", "total", "total_pages", "data"]
+    "required": ["page", "per_page", "total", "total_pages", "data"],
 }
 
 REGISTER_SCHEMA = {
@@ -100,7 +100,7 @@ REGISTER_SCHEMA = {
         "id": {"type": "integer"},
         "token": {"type": "string"},
     },
-    "required": ["id", "token"]
+    "required": ["id", "token"],
 }
 
 
@@ -115,16 +115,14 @@ def test_get_users(api_client):
 
     with allure.step("Validate response contains 'data' field"):
         assert "data" in response.json()
-        
+
     with allure.step("Validate response matches LIST_USER_SCHEMA"):
         validate(instance=response.json(), schema=LIST_USER_SCHEMA)
-    
+
 
 @allure.feature("User API")
 @allure.story("Get Single User")
-@pytest.mark.parametrize("index", [
-    4
-])
+@pytest.mark.parametrize("index", [4])
 def test_single_user(api_client, index):
     with allure.step(f"Send GET request to /users/{index}"):
         response = api_client.get(f"{BASE_URL}/users/{index}")
@@ -136,13 +134,17 @@ def test_single_user(api_client, index):
     with allure.step("Validate response matches USER_SCHEMA"):
         validate(instance=response.json(), schema=USER_SCHEMA)
 
+
 @allure.feature("User API")
 @allure.story("Create User")
-@pytest.mark.parametrize("user", [
-    (faker.name(), faker.job()),
-    (faker.name(), faker.job()),
-    (faker.name(), faker.job())
-])
+@pytest.mark.parametrize(
+    "user",
+    [
+        (faker.name(), faker.job()),
+        (faker.name(), faker.job()),
+        (faker.name(), faker.job()),
+    ],
+)
 def test_create_user(api_client, user):
     user = list(user)
     payload = {"name": f"{user[0]}", "job": f"{user[1]}"}
@@ -154,21 +156,21 @@ def test_create_user(api_client, user):
 
     with allure.step("Validate response contains correct user name"):
         assert response.json()["name"] == user[0]
-    
+
     with allure.step("Validate response contains correct job"):
         assert response.json()["job"] == user[1]
 
+
 @allure.feature("User API")
 @allure.story("Delete User")
-@pytest.mark.parametrize("index", [
-    1, 2, 3
-])
+@pytest.mark.parametrize("index", [1, 2, 3])
 def test_delete_user(api_client, index):
     with allure.step(f"Send DELETE request to /users/{index}"):
         response = api_client.delete(f"{BASE_URL}/users/{index}")
 
     with allure.step("Validate response status code"):
         assert response.status_code == 204
+
 
 @allure.feature("Resource API")
 @allure.story("Get Resource List")
@@ -181,15 +183,14 @@ def test_get_resource(api_client):
 
     with allure.step("Validate response contains 'data' field"):
         assert "data" in response.json()
-        
+
     with allure.step("Validate response matches LIST_RESOURCE_SCHEMA"):
         validate(instance=response.json(), schema=LIST_RESOURCE_SCHEMA)
 
+
 @allure.feature("Resource API")
 @allure.story("Get Single Resource")
-@pytest.mark.parametrize("index", [
-    1, 2, 3
-])
+@pytest.mark.parametrize("index", [1, 2, 3])
 def test_single_resource(api_client, index):
     with allure.step(f"Send GET request to /unknown/{index}"):
         response = api_client.get(f"{BASE_URL}/unknown/5")
@@ -199,14 +200,18 @@ def test_single_resource(api_client, index):
 
     with allure.step("Validate response matches RESOURCE_SCHEMA"):
         validate(instance=response.json(), schema=RESOURCE_SCHEMA)
-        
+
+
 @allure.feature("Register API")
 @allure.story("Register User")
-@pytest.mark.parametrize("register", [
-    {"email": "michael.lawson@reqres.in", "password": faker.password()},
-    {"email": "lindsay.ferguson@reqres.in", "password": faker.password()},
-    {"email": "tobias.funke@reqres.in", "password": faker.password()}
-])
+@pytest.mark.parametrize(
+    "register",
+    [
+        {"email": "michael.lawson@reqres.in", "password": faker.password()},
+        {"email": "lindsay.ferguson@reqres.in", "password": faker.password()},
+        {"email": "tobias.funke@reqres.in", "password": faker.password()},
+    ],
+)
 def test_register_user(api_client, register):
     with allure.step(f"Send POST request to /register"):
         payload = {"email": register["email"], "password": register["password"]}
